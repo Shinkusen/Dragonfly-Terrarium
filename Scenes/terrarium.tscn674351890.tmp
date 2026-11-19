@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://cm3lxypwp5yul"]
+
+[ext_resource type="Script" uid="uid://bt84q3aqv0pgf" path="res://Scripts/terrarium.gd" id="1_7xf3a"]
+[ext_resource type="PackedScene" uid="uid://b0345588kedgd" path="res://Scenes/dragonfly_body.tscn" id="1_kr21h"]
+[ext_resource type="PackedScene" uid="uid://b6efcxqr30271" path="res://Scenes/obstacle_1.tscn" id="2_jid1r"]
+[ext_resource type="PackedScene" uid="uid://bh6ahv1drv5jm" path="res://Scenes/prey.tscn" id="3_yq320"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_7xf3a"]
+vertices = PackedVector2Array(-7.5, -14.8515625, -7.5, -10.5, -11.8984375, -10.5, -11.9296875, -14.8984375, 1659, 320, 1659, 150, 1896, 13.5, 1896, 1047.5, 23.5, 13.5, 1342, 150, 1659, 861, 23.5, 1047.5, 1342, 861, 599, 861, 1342, 691, 282, 861, 282, 691, 599, 691, 1342, 320, 599, 320, 599, 150, 282, 150, 282, 320, 1659, 691)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 5, 6, 7), PackedInt32Array(8, 6, 5, 9), PackedInt32Array(10, 7, 11, 12), PackedInt32Array(12, 11, 13, 14), PackedInt32Array(15, 13, 11), PackedInt32Array(15, 11, 8, 16), PackedInt32Array(14, 13, 17), PackedInt32Array(9, 18, 19, 20), PackedInt32Array(8, 9, 20), PackedInt32Array(8, 20, 21), PackedInt32Array(8, 21, 22), PackedInt32Array(16, 8, 22), PackedInt32Array(17, 16, 22, 19), PackedInt32Array(14, 17, 19, 18), PackedInt32Array(23, 14, 18, 4), PackedInt32Array(23, 4, 7), PackedInt32Array(23, 7, 10)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-15, 1089, -22, -25, 1930, -6, 1930, 1085)])
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_g4v7s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g4v7s"]
+size = Vector2(223, 1081)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yf5fn"]
+size = Vector2(226, 1082)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_57qmd"]
+size = Vector2(1919.5, 153)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_d0u6y"]
+size = Vector2(1915, 147)
+
+[node name="Terrarium" type="Node2D" unique_id=669816537]
+script = ExtResource("1_7xf3a")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=198733788]
+navigation_polygon = SubResource("NavigationPolygon_7xf3a")
+
+[node name="Obstacle1_1" parent="NavigationRegion2D" unique_id=1302281308 instance=ExtResource("2_jid1r")]
+position = Vector2(440, 776)
+
+[node name="Obstacle1_2" parent="NavigationRegion2D" unique_id=1108742076 instance=ExtResource("2_jid1r")]
+position = Vector2(1500, 776)
+
+[node name="Obstacle1_3" parent="NavigationRegion2D" unique_id=499810483 instance=ExtResource("2_jid1r")]
+position = Vector2(440, 235)
+
+[node name="Obstacle1_4" parent="NavigationRegion2D" unique_id=1773380991 instance=ExtResource("2_jid1r")]
+position = Vector2(1500, 235)
+
+[node name="Wall1" type="StaticBody2D" parent="NavigationRegion2D" unique_id=1419749323]
+position = Vector2(-214, 10)
+physics_material_override = SubResource("PhysicsMaterial_g4v7s")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/Wall1" unique_id=1911610701]
+position = Vector2(116, 530)
+shape = SubResource("RectangleShape2D_g4v7s")
+
+[node name="Wall2" type="StaticBody2D" parent="NavigationRegion2D" unique_id=832554089]
+position = Vector2(1935, 9)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/Wall2" unique_id=196806719]
+position = Vector2(84, 530)
+shape = SubResource("RectangleShape2D_yf5fn")
+
+[node name="Wall3" type="StaticBody2D" parent="NavigationRegion2D" unique_id=1045124599]
+position = Vector2(81, 1154)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/Wall3" unique_id=1832492674]
+position = Vector2(880, -28)
+shape = SubResource("RectangleShape2D_57qmd")
+
+[node name="Wall4" type="StaticBody2D" parent="NavigationRegion2D" unique_id=1240564202]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/Wall4" unique_id=1099530983]
+position = Vector2(960, -70)
+shape = SubResource("RectangleShape2D_d0u6y")
+
+[node name="DragonflyBody" parent="." unique_id=1362088879 instance=ExtResource("1_kr21h")]
+position = Vector2(960, 540)
+
+[node name="Prey1" parent="." unique_id=1347411175 instance=ExtResource("3_yq320")]
+position = Vector2(177, 212)
+
+[node name="Prey2" parent="." unique_id=1000767076 instance=ExtResource("3_yq320")]
+position = Vector2(1525, 460)
+
+[node name="Prey3" parent="." unique_id=366283406 instance=ExtResource("3_yq320")]
+position = Vector2(437, 946)

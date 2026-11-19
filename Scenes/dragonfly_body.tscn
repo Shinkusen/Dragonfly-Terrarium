@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://b0345588kedgd"]
+
+[ext_resource type="Script" uid="uid://dyycx2w87jqaj" path="res://Scripts/dragongfly_body.gd" id="1_n4xpa"]
+[ext_resource type="Texture2D" uid="uid://cf1sxx1i76jv7" path="res://Sprite/Dragonfly[PlaceHolder].png" id="2_6abjs"]
+[ext_resource type="PackedScene" uid="uid://b6pwcuan8u4th" path="res://Scenes/dragonfly_controller.tscn" id="2_j1ytt"]
+[ext_resource type="PackedScene" uid="uid://deinf7yjv7ogn" path="res://Scenes/dragonfly_state_wander.tscn" id="4_6abjs"]
+[ext_resource type="PackedScene" uid="uid://dqjet2tu8g2mp" path="res://Scenes/dragonfly_state_stalk.tscn" id="5_7fop0"]
+[ext_resource type="PackedScene" uid="uid://csjfk6fykpsdh" path="res://Scenes/dragonfly_state_hunt.tscn" id="6_funod"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g4v7s"]
+radius = 41.0
+height = 108.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g4v7s"]
+radius = 272.20947
+
+[node name="DragonflyBody" type="CharacterBody2D" unique_id=1362088879]
+script = ExtResource("1_n4xpa")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1584709851]
+shape = SubResource("CapsuleShape2D_g4v7s")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2032934674]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_6abjs")
+
+[node name="Vision" type="Area2D" parent="." unique_id=295710073]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision" unique_id=1588365912]
+shape = SubResource("CircleShape2D_g4v7s")
+
+[node name="RayCast2D" type="RayCast2D" parent="Vision" unique_id=78213710]
+target_position = Vector2(0, 0)
+
+[node name="DragonflyController" parent="." unique_id=994184345 instance=ExtResource("2_j1ytt")]
+
+[node name="DragonflyStateWander" parent="DragonflyController" unique_id=2147035173 instance=ExtResource("4_6abjs")]
+
+[node name="DragonflyStateStalk" parent="DragonflyController" unique_id=123743989 instance=ExtResource("5_7fop0")]
+
+[node name="DragonflyStateHunt" parent="DragonflyController" unique_id=1238745949 instance=ExtResource("6_funod")]
+
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
+[connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]

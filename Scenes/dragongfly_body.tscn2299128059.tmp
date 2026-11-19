@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://b0345588kedgd"]
+
+[ext_resource type="Script" uid="uid://dyycx2w87jqaj" path="res://Scripts/dragongfly_body.gd" id="1_nl0gg"]
+[ext_resource type="PackedScene" uid="uid://b6pwcuan8u4th" path="res://Scenes/dragonfly_controller.tscn" id="2_ponhl"]
+[ext_resource type="PackedScene" uid="uid://b3frvcre460pp" path="res://Scenes/dragonfly_state.tscn" id="3_yxfb3"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g4v7s"]
+
+[node name="DragongflyBody" type="CharacterBody2D" unique_id=1362088879]
+script = ExtResource("1_nl0gg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1584709851]
+shape = SubResource("CapsuleShape2D_g4v7s")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1667172582]
+
+[node name="DragonflyController" parent="." unique_id=994184345 instance=ExtResource("2_ponhl")]
+
+[node name="DragonflyState" parent="DragonflyController" unique_id=227980927 instance=ExtResource("3_yxfb3")]

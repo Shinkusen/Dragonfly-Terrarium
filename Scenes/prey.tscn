@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bh6ahv1drv5jm"]
+
+[ext_resource type="Texture2D" uid="uid://l25wdc35vc6k" path="res://Sprite/Bee[PlaceHolder].png" id="1_2rp0s"]
+[ext_resource type="Script" uid="uid://cf51ooysx8ce8" path="res://Scripts/prey.gd" id="2_li6sy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g4v7s"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yf5fn"]
+radius = 237.0021
+
+[node name="Prey" type="CharacterBody2D" unique_id=1347411175 groups=["prey"]]
+script = ExtResource("2_li6sy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1686660328]
+shape = SubResource("CircleShape2D_g4v7s")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1898944660]
+scale = Vector2(0.3125, 0.296875)
+texture = ExtResource("1_2rp0s")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=656949738]
+avoidance_enabled = true
+radius = 12.0
+neighbor_distance = 100.0
+
+[node name="Vision" type="Area2D" parent="." unique_id=1513124644]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision" unique_id=979875746]
+shape = SubResource("CircleShape2D_yf5fn")
+
+[node name="RayCast2D" type="RayCast2D" parent="Vision" unique_id=151333862]
+target_position = Vector2(0, 100)
+
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
+[connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]

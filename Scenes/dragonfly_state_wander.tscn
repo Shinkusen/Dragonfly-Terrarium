@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://deinf7yjv7ogn"]
+
+[ext_resource type="Script" uid="uid://dfxui6dtnr5ox" path="res://Scripts/dragonfly_state_wander.gd" id="1_fc8cv"]
+
+[node name="DragonflyStateWander" type="Node" unique_id=2147035173]
+script = ExtResource("1_fc8cv")

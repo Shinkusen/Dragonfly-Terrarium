@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b6pwcuan8u4th"]
+
+[ext_resource type="Script" uid="uid://bv227758rok6x" path="res://Scripts/dragonfly_controller.gd" id="1_ylys6"]
+
+[node name="DragonflyController" type="Node" unique_id=994184345]
+script = ExtResource("1_ylys6")
