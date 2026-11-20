@@ -24,6 +24,9 @@ var gaussian := GaussianProcessRegression.new()
 #Seed reference
 var seed: String
 
+#time step
+var time_step: float
+
 #Confidence is checked by wanderer and needs to be onready and different default values until initialized
 var confidence: int = database.size_databundle * 3
 var current_confidence: int = 0
@@ -32,6 +35,7 @@ var current_confidence: int = 0
 var known_prey: Array[CharacterBody2D] = []
 var known_prey_chase_time: Array[float] = []
 
+#Flag for setup
 var setup_flag : bool = true
 
 #Setup for this specific State
@@ -45,7 +49,6 @@ func setup(dragonfly_body: DragonflyBody, dragonfly_controller: DragonflyControl
 
 #Run first reports and enter first state
 func _ready() -> void:
-	print("[REPORT]: Dragonfly's Controller is Running")
 	#Get body reference(Body is parent)
 	if get_parent() is DragonflyBody:
 		body = get_parent() as DragonflyBody
@@ -53,6 +56,9 @@ func _ready() -> void:
 	#Get terrarium reference(Terrarium is grandparent)
 	if get_parent().get_parent() is Terrarium:
 		terrarium = get_parent().get_parent() as Terrarium
+		
+		#Get time step
+		time_step = terrarium.experiment_time_step
 		
 		#Get seed from terrarium
 		seed = terrarium.experiment_name + "_" + str(terrarium.experiment_id) + "_dragonfly"
@@ -68,6 +74,10 @@ func _ready() -> void:
 	
 	else:
 		print("[REPORT]: Dragonfly does NOT has a State")
+	
+	#Register that its ready to run
+	terrarium.registrations.append(self)
+	print("[REPORT]: Dragonfly's Controller is Running")
 
 func check_studied_prey(prey: CharacterBody2D):
 	if prey in stalk.studied_prey:
@@ -97,10 +107,13 @@ func fill_state() -> void:
 	current_state.setup(body, self)
 
 #Check current state and runs it
-func _physics_process(delta: float) -> void:
-	if current_state:
-		#Call the state machine loop
-		current_state.state_behavior(delta)
+func controller_process(delta: float) -> void:
+	#Only begin when all agents have registered
+	if terrarium.start_experiment:
+		if current_state:
+			#Call the state machine loop
+			#OBS: Use either delta or experiment_time_step 
+			current_state.state_behavior(delta)
 	
 
 #Called by signal, for the case were the prey dies in the stalk state, the confidence must increasse and the database needs to remove the dead prey's data

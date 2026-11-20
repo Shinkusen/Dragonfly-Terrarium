@@ -6,11 +6,12 @@ class_name Terrarium
 extends Node2D
 
 #[SEED MANUAL]
-# Experiment_id, Agent, Action/Purpose, Increment(optional)
+#Experiment_id, Agent, Action/Purpose, Increment(optional)
 
 #Exports for nameing convention of experiment
-@export var experiment_id: int = 1
+@export var experiment_id: int = 2
 @export var experiment_name: String = "Test"
+@export var experiment_time_step: float = 0.01
 
 #References for terrarium agents and components
 @onready var dragonfly_body = $DragonflyBody
@@ -25,6 +26,18 @@ extends Node2D
 @onready var prey1_pos = prey1.global_position
 @onready var prey2_pos = prey2.global_position
 @onready var prey3_pos = prey3.global_position
+
+#Registration
+var registrations: Array = []
+
+#Total time elapsed
+var experiment_time_elapsed: float = 0.0
+
+#Flag for triggering the start of the experiment and registrations report
+var trigger: bool = true
+
+#Marks the start of the experiment for the other components
+var start_experiment: bool = false
 
 #--- OLD FEATURE ---
 #Instancieate Data Logger
@@ -57,26 +70,50 @@ func _ready() -> void:
 	
 	#Prey dependencies
 	prey1.pursuer = dragonfly_body
-	prey1.seed = experiment_name + "_" + str(experiment_id) + "_prey1"
 	prey2.pursuer = dragonfly_body
-	prey2.seed = experiment_name + "_" + str(experiment_id) + "_prey2"
 	prey3.pursuer = dragonfly_body
-	prey3.seed = experiment_name + "_" + str(experiment_id) + "_prey3"
-	
-	#Begin recording
-	logger.start_recording()
 
 #Constantly update the Data Logger
-func _process(delta: float) -> void:
-	if logger.recording:
-		logger.update(delta)
-	
-	else:
-		if logger.elapsed_time >= logger.experiment_timer:
-			print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished")
-			print("...Closing Terrarium")
-			get_tree().quit()
+func _physics_process(delta: float) -> void:
+	#Makes sure all components have registered
+	if registrations.size() == 4:
+		if trigger:
+			print("[Terrarium Report]: All agents registered | Begin ", experiment_name + str(experiment_id))
 			
-			#print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished")
-			#print("...Restarting Terrarium")
-			#get_tree().reload_current_scene()
+			#So this section only triggers once
+			trigger = false
+			
+			#Begin recording
+			logger.start_recording()
+			
+			#Begin the experiment
+			start_experiment = true
+		
+		#Processes for each component
+		if is_instance_valid(dragonfly_controller):
+			dragonfly_controller.controller_process(delta)
+		if is_instance_valid(prey1):
+			prey1.prey_process(delta)
+		if is_instance_valid(prey2):
+			prey2.prey_process(delta)
+		if is_instance_valid(prey3):
+			prey3.prey_process(delta)
+		
+		#Keeps recording until logger timer has run out
+		if logger.recording:
+			#OBS: Use either delta or experiment_time_step 
+			logger.update(delta)
+		
+		#Close down the terrarium when logger timer ruuns out
+		else:
+			if logger.elapsed_time >= logger.experiment_timer:
+				print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished - ", experiment_time_elapsed, "s")
+				print("...Closing Terrarium")
+				get_tree().quit()
+				
+				#print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished")
+				#print("...Restarting Terrarium")
+				#get_tree().reload_current_scene()
+			
+		#Count elapsed time
+		experiment_time_elapsed += experiment_time_step

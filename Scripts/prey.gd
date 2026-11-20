@@ -12,6 +12,10 @@ extends CharacterBody2D
 #--- OLD FEATURE ---
 #@export var configuration: int = 0
 
+#Terrarium reference
+var terrarium: Terrarium
+
+#Components reference
 @onready var agent = $NavigationAgent2D
 @onready var vision = $Vision/RayCast2D
 
@@ -23,8 +27,9 @@ var resting : bool = false
 
 #Seed reference
 var seed: String
-var seed_increment: int = 1
-var seed_aux: String
+
+#time step
+var time_step: float
 
 #Flee function vars
 var fleeing : bool = false
@@ -59,10 +64,26 @@ signal prey_death
 #var direction_flag : bool = false
 
 func _ready():
-	#previous_position = global_position
+	#Navegation agent variables
 	sample_position = global_position
 	agent.avoidance_enabled = true
 	agent.velocity_computed.connect(_on_velocity_computed)
+	
+	#Get terrarium reference
+	terrarium = get_parent()
+	
+	#Build seed
+	seed = terrarium.experiment_name + "_" + str(terrarium.experiment_id) + "_" + name + "_Move"
+	
+	#Apply seed
+	rng.seed = hash(seed)
+	
+	#Get time step
+	time_step = terrarium.experiment_time_step
+	
+	#Register that its ready to run
+	terrarium.registrations.append(self)
+	print("[REPORT]: ", name, " is Running")
 
 #Detect if the Prey is stuck in geometry
 func check_stuck(delta: float) -> void:
@@ -99,21 +120,13 @@ func choose_random_direction() -> void:
 	#Reset resting flag
 	resting = false
 	
-	#Build seed
-	seed_aux = seed + "_" + "Move_" + str(seed_increment)
-	seed_increment += 1
-	print(name, ": New Movement Seed - ", seed_aux)
-	
-	#Apply seed
-	rng.seed = hash(seed_aux)
-	
 	#Random movement
 	var random_angle := rng.randf_range(0.0, 2.0 * PI)
 
 	direction = Vector2(cos(random_angle),sin(random_angle))
 
 	# 20% chance of resting
-	if allow_rest and randf() < 0.05:
+	if allow_rest and rng.randf() < 0.05:
 		direction = Vector2.ZERO
 		resting = true
 		print("Resting...")
@@ -234,6 +247,9 @@ func flee(delta: float) -> void:
 
 #Checks if the prey was caught
 func check_pursuer_catch() -> void:
+	if pursuer == null:
+		return
+	
 	for i in range(pursuer.get_slide_collision_count()):
 		var collision = pursuer.get_slide_collision(i)
 		
@@ -351,35 +367,38 @@ func check_pursuer_catch() -> void:
 #------------------------------------------------------
 
 #Physics loop for Prey
-func _physics_process(delta: float) -> void:
-	direction_timer -= delta
-	
-	#Fleeing behavior
-	#------------------------------------------------------------------
-	if fleeing:
-		flee(delta)
-	#------------------------------------------------------------------
-	
-	#--- Random movement ---
-	#------------------------------------------------------------------
-	elif not fleeing and direction_timer <= 0.0:
-		choose_random_direction()
-		direction_timer = timer
-	#------------------------------------------------------------------
-	
-	#--- Base behavior ---
-	#------------------------------------------------------------------
-	elif not fleeing:
-		velocity = direction * speed
-		move_and_slide()
-	
-	#Always check if prey is stuck
-	if not resting:
-		check_stuck(delta)
-	
-	avoid_obstacle(delta)
-	check_pursuer_catch()
-	#------------------------------------------------------------------
+func prey_process(delta: float) -> void:
+	#Only begin when all agents have registered
+	if terrarium.start_experiment:
+		#OBS: Used to subract either delta or experiment_time_step (direction_timer -= delta)
+		direction_timer -= delta
+		
+		#Fleeing behavior
+		#------------------------------------------------------------------
+		if fleeing:
+			flee(delta)
+		#------------------------------------------------------------------
+		
+		#Random movement
+		#------------------------------------------------------------------
+		elif not fleeing and direction_timer <= 0.0:
+			choose_random_direction()
+			direction_timer = timer
+		#------------------------------------------------------------------
+		
+		#Base behavior
+		#------------------------------------------------------------------
+		elif not fleeing:
+			velocity = direction * speed
+			move_and_slide()
+		
+		#Always check if prey is stuck
+		if not resting:
+			check_stuck(delta)
+		
+		avoid_obstacle(delta)
+		check_pursuer_catch()
+		#------------------------------------------------------------------
 
 #Signal Functions
 #------------------------------------------------------------

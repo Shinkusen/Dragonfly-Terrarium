@@ -25,7 +25,7 @@ var collect_patience_left: float = 0.0
 var prediction_patience: float = 4.0
 var prediction_patience_left: float = 0.0
 var predicting: bool = false
-var prediction_time_max: float = 5.0
+var prediction_time_max: float = 4.0
 var prediction_time: float = 0.0
 var direction: Vector2
 var predicted_direction: Vector2
@@ -179,8 +179,8 @@ func drop_prey(prey: CharacterBody2D) -> void:
 
 #--- OLD FEATURE ---
 #Stay still and let prey escape
-func leave_prey() -> void:
-	direction = -1 * direction
+#func leave_prey() -> void:
+	#direction = -1 * direction
 	
 #Stop chasing prey and enter wander mode
 func predict_prey(prey: CharacterBody2D) -> void:
@@ -234,10 +234,7 @@ func state_behavior(delta: float) -> void:
 	
 	#Keep following the prey until line of sight is broken
 	if current_prey != null:
-		if hunt_patience_left <= hunt_patience_max:
 			hunt_prey(current_prey, delta)
-		else:
-			leave_prey()
 	#Else exit
 	else:
 		#Exit Behavior

@@ -37,7 +37,6 @@ func prey_nearby() -> void:
 
 #Handles basic movement and recieves a Vector2 as a parameter
 func move_body(velocity_vector: Vector2) -> void:
-	
 	self.velocity = velocity_vector
 	move_and_slide()
 
