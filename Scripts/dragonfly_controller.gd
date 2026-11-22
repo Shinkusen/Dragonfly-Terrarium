@@ -59,10 +59,8 @@ func _ready() -> void:
 		
 		#Get time step
 		time_step = terrarium.experiment_time_step
-		
-		#Get seed from terrarium
-		seed = terrarium.experiment_name + "_" + str(terrarium.experiment_id) + "_dragonfly"
-	
+
+func initialize_controller() -> void:
 	if current_state:
 		print("[REPORT]: Dragonfly has a State")
 		
@@ -79,6 +77,11 @@ func _ready() -> void:
 	terrarium.registrations.append(self)
 	print("[REPORT]: Dragonfly's Controller is Running")
 
+func update_seed() -> void:
+	#Get seed from terrarium
+	seed = terrarium.experiment_name + "_" + str(terrarium.experiment_id) + "_dragonfly"
+
+#Checks studied prey from stalker state
 func check_studied_prey(prey: CharacterBody2D):
 	if prey in stalk.studied_prey:
 		return true

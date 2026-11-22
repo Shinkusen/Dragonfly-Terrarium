@@ -72,18 +72,20 @@ func _ready():
 	#Get terrarium reference
 	terrarium = get_parent()
 	
-	#Build seed
-	seed = terrarium.experiment_name + "_" + str(terrarium.experiment_id) + "_" + name + "_Move"
-	
-	#Apply seed
-	rng.seed = hash(seed)
-	
 	#Get time step
 	time_step = terrarium.experiment_time_step
 	
 	#Register that its ready to run
 	terrarium.registrations.append(self)
 	print("[REPORT]: ", name, " is Running")
+
+func build_seed() -> void:
+	#Build seed
+	seed = terrarium.experiment_name + "_" + str(terrarium.experiment_id) + "_" + name + "_Move"
+	print(name, " Seed: ", seed)
+	
+	#Apply seed
+	rng.seed = hash(seed)
 
 #Detect if the Prey is stuck in geometry
 func check_stuck(delta: float) -> void:

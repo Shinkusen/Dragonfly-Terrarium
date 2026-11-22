@@ -9,9 +9,10 @@ extends Node2D
 #Experiment_id, Agent, Action/Purpose, Increment(optional)
 
 #Exports for nameing convention of experiment
-@export var experiment_id: int = 2
+@export var experiment_id: int = 1
 @export var experiment_name: String = "Test"
 @export var experiment_time_step: float = 0.01
+@export var experiments_max: int = 1
 
 #References for terrarium agents and components
 @onready var dragonfly_body = $DragonflyBody
@@ -36,6 +37,12 @@ var experiment_time_elapsed: float = 0.0
 #Flag for triggering the start of the experiment and registrations report
 var trigger: bool = true
 
+#Flag for emergency experiment halt
+var halt: bool = false
+
+#Flag for seed update
+var seed_update: bool = false
+
 #Marks the start of the experiment for the other components
 var start_experiment: bool = false
 
@@ -54,8 +61,8 @@ func _ready() -> void:
 	#logger = $"/root/LoggerGlobal"
 	
 	#Check if there was a experiment id in the past
-	if logger.experiment_id_past != -1:
-		#Increment id for next test
+	if logger.experiment_id_past != 0:
+		#Correct the codename of the experiment
 		experiment_id = logger.experiment_id_past + 1
 	
 	#Data Logger dependencies
@@ -72,11 +79,32 @@ func _ready() -> void:
 	prey1.pursuer = dragonfly_body
 	prey2.pursuer = dragonfly_body
 	prey3.pursuer = dragonfly_body
+	
+	#Initialize all random seeds
+	update_seeds()
+	
+	#Initialize Dragonfly after assigning its seed
+	dragonfly_controller.initialize_controller()
+
+func update_seeds() -> void:
+	print("|Updating Seeds|")
+	
+	#Use the specialized update seed function
+	dragonfly_controller.update_seed()
+	
+	#Use the build seed function for implicit update
+	prey1.build_seed()
+	prey2.build_seed()
+	prey3.build_seed()
+	
+	#resume experiment
+	halt = false
 
 #Constantly update the Data Logger
 func _physics_process(delta: float) -> void:
 	#Makes sure all components have registered
 	if registrations.size() == 4:
+		#Anounce and execute the begining of the experiment
 		if trigger:
 			print("[Terrarium Report]: All agents registered | Begin ", experiment_name + str(experiment_id))
 			
@@ -104,16 +132,21 @@ func _physics_process(delta: float) -> void:
 			#OBS: Use either delta or experiment_time_step 
 			logger.update(delta)
 		
-		#Close down the terrarium when logger timer ruuns out
+		#Handle the ending of the experiment
 		else:
+			#Check if the timer expired
 			if logger.elapsed_time >= logger.experiment_timer:
-				print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished - ", experiment_time_elapsed, "s")
-				print("...Closing Terrarium")
-				get_tree().quit()
+				#Close down the terrarium when the amount of experiments have reached maximum
+				if logger.experiment_amount >= experiments_max:
+					print("\n[TERRARIUM REPORT]: Last Dragonfly Experiment has finished - ", experiment_time_elapsed, "s")
+					print("...Closing Terrarium\n")
+					get_tree().quit()
 				
-				#print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished")
-				#print("...Restarting Terrarium")
-				#get_tree().reload_current_scene()
+				#Reset the terrarium if there are more experiments to go
+				else:
+					print("\n[TERRARIUM REPORT]: Dragonfly Experiment has finished - ", experiment_time_elapsed, "s")
+					print("...Restarting Terrarium\n")
+					get_tree().reload_current_scene()
 			
 		#Count elapsed time
 		experiment_time_elapsed += experiment_time_step

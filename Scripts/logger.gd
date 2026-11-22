@@ -7,8 +7,9 @@ extends Node
 
 #Configuration
 var experiment_id: int
-var experiment_id_past: int = -1
+var experiment_id_past: int = 0
 var experiment_name: String
+var experiment_amount: int = 0
 var hunt_mode: bool = true
 var sample_interval: float = 0.5
 var experiment_timer: float = 120
@@ -180,7 +181,7 @@ func record_sample():
 
 #Export current logger data array into csv file format
 func export_csv():
-	var file_path = experiment_name + "_" + str(experiment_id) + ".csv"
+	var file_path = "user://" + experiment_name + "_" + str(experiment_id) + ".csv"
 
 	var file = FileAccess.open(
 		file_path,
@@ -250,8 +251,12 @@ func export_csv():
 	
 	file.close()
 	
-	print("...exporting data")
+	print("\n...exporting data")
 	print("CSV exported to: ", file_path)
+	print(OS.get_user_data_dir())
 	
 	#Remember last experiment id
 	experiment_id_past = experiment_id
+	
+	#Save the amount of exeperiments done
+	experiment_amount += 1

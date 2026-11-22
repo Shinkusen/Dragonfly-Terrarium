@@ -43,8 +43,6 @@ func setup(dragonfly_body: DragonflyBody, dragonfly_controller: DragonflyControl
 		body = dragonfly_body
 		#Controller reference
 		controller = dragonfly_controller
-		#Get seed
-		seed = controller.seed
 		#Build seed
 		setup_rngs()
 		#Connect prey detection signal to funcion "sighted_prey"
@@ -53,6 +51,12 @@ func setup(dragonfly_body: DragonflyBody, dragonfly_controller: DragonflyControl
 		setup_flag = false
 
 func setup_rngs() -> void:
+	#Get seed
+	seed = controller.seed
+	
+	print("Dragonfly Seed: ", seed)
+	
+	#Set up the Random Number Generators
 	rng_move.seed = hash(seed + "_Move")
 	rng_collision.seed = hash(seed + "_Collision")
 	rng_rest.seed = hash(seed + "_Rest")
