@@ -193,13 +193,40 @@ func gaussian_predict(horizon: float) -> Dictionary:
 		variance -= value * value
 
 	variance = maxf(variance, 0.0)
-
-	var baseline: Vector2 = (latest_position + latest_velocity * horizon)
 	
+	#Calculate prediction without uncertanty
+	#Calculate baseline
+	#var baseline: Vector2 = (latest_position + latest_velocity * horizon)
+	#
+	#print("BASELINE: ", baseline)
+	#print("CORRECTION: ", correction)
+	#
+	#return {"position": baseline + correction,"variance": variance,"valid": true}
+	
+	#Calculate prediction with uncertanty
+	#Calculate baseline
+	var baseline: Vector2 = latest_position + latest_velocity * horizon
+
+	#Normalize uncertainty.
+	var uncertainty := clampf(variance / signal_variance, 0.0, 1.0)
+
+	#Confidence determines how much we trust the GP correction.
+	var confidence := 1.0 - uncertainty
+
+	#Apply confidence to the correction.
+	var final_position := baseline + correction * confidence
+
 	print("BASELINE: ", baseline)
 	print("CORRECTION: ", correction)
-	
-	return {"position": baseline + correction,"variance": variance,"valid": true}
+	print("VARIANCE: ", variance)
+	print("CONFIDENCE: ", confidence)
+	print("FINAL POSITION: ", final_position)
+
+	return {
+		"position": final_position,
+		"variance": variance,
+		"valid": true
+	}
 
 #The final prediction based on the current time (horizon), OBS: Its doesn't need to be trained always
 func predict(dataset: Array, horizon: float) -> Vector2:

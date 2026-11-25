@@ -61,6 +61,8 @@ func _ready() -> void:
 		time_step = terrarium.experiment_time_step
 
 func initialize_controller() -> void:
+	print("[REPORT]: Dragonfly's Controller is Running")
+	
 	if current_state:
 		print("[REPORT]: Dragonfly has a State")
 		
@@ -75,7 +77,6 @@ func initialize_controller() -> void:
 	
 	#Register that its ready to run
 	terrarium.registrations.append(self)
-	print("[REPORT]: Dragonfly's Controller is Running")
 
 func update_seed() -> void:
 	#Get seed from terrarium

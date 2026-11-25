@@ -24,6 +24,8 @@ var pursuer: CharacterBody2D
 var direction := Vector2.ZERO
 var direction_timer : float = 0.0
 var resting : bool = false
+var actual_velocity: Vector2 = Vector2.ZERO
+var previous_position: Vector2
 
 #Seed reference
 var seed: String
@@ -66,8 +68,8 @@ signal prey_death
 func _ready():
 	#Navegation agent variables
 	sample_position = global_position
-	agent.avoidance_enabled = true
-	agent.velocity_computed.connect(_on_velocity_computed)
+	agent.avoidance_enabled = false
+	#agent.velocity_computed.connect(_on_velocity_computed)
 	
 	#Get terrarium reference
 	terrarium = get_parent()
@@ -245,7 +247,11 @@ func flee(delta: float) -> void:
 	vision.force_raycast_update()
 	
 	#Request RVO safe velocity
-	agent.velocity = direction * speed
+	#agent.velocity = direction * speed
+	
+	#Apply movement directly without RVO
+	velocity = direction * speed
+	move_and_slide()
 
 #Checks if the prey was caught
 func check_pursuer_catch() -> void:
@@ -372,6 +378,8 @@ func check_pursuer_catch() -> void:
 func prey_process(delta: float) -> void:
 	#Only begin when all agents have registered
 	if terrarium.start_experiment:
+		previous_position = global_position
+		
 		#OBS: Used to subract either delta or experiment_time_step (direction_timer -= delta)
 		direction_timer -= delta
 		
@@ -401,14 +409,18 @@ func prey_process(delta: float) -> void:
 		avoid_obstacle(delta)
 		check_pursuer_catch()
 		#------------------------------------------------------------------
+		
+		#Measure actual displacement velocity
+		if delta > 0.0:
+			actual_velocity = (global_position - previous_position) / delta
 
 #Signal Functions
 #------------------------------------------------------------
 #GODOT's RVO system for avoiding obstacles
-func _on_velocity_computed(safe_velocity):
-	if fleeing:
-		velocity = safe_velocity
-		move_and_slide()
+#func _on_velocity_computed(safe_velocity):
+	#if fleeing:
+		#velocity = safe_velocity
+		#move_and_slide()
 
 func _on_vision_body_entered(body: Node2D) -> void:
 	if body == pursuer:

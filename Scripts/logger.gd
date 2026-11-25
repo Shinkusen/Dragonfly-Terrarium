@@ -12,7 +12,7 @@ var experiment_name: String
 var experiment_amount: int = 0
 var hunt_mode: bool = true
 var sample_interval: float = 0.5
-var experiment_timer: float = 120
+var experiment_timer: float = 600
 
 #Storage
 var logger_data: Array[Dictionary] = []
@@ -69,9 +69,10 @@ func update(delta: float) -> void:
 		elapsed_time += delta
 		sample_timer += delta
 		
-		if sample_timer >= sample_interval:
-			sample_timer = 0.0
-			record_sample()
+	#Preserve accumulated time
+	while sample_timer >= sample_interval:
+		sample_timer -= sample_interval
+		record_sample()
 
 #Records new sample
 func record_sample():
@@ -107,15 +108,14 @@ func record_sample():
 		predicting = dragonfly.get_node("DragonflyController").current_state.predicting
 	else:
 		predicting = false
-		
 	
 	#Handle information for alive and dead prey
-	if is_instance_valid(prey1):
+	if is_instance_valid(prey1) and not prey1.is_queued_for_deletion():
 		prey1_status = "Alive"
-		prey1_pos_x = prey1.position.x
-		prey1_pos_y = prey1.position.y
-		prey1_vel_x = prey1.velocity.x
-		prey1_vel_y = prey1.velocity.y
+		prey1_pos_x = (prey1.global_position.x)
+		prey1_pos_y = (prey1.global_position.y)
+		prey1_vel_x = (prey1.velocity.x)
+		prey1_vel_y = (prey1.velocity.y)
 	else:
 		prey1_status = "Dead"
 		prey1_pos_x = null
@@ -123,12 +123,12 @@ func record_sample():
 		prey1_vel_x = null
 		prey1_vel_y = null
 	
-	if is_instance_valid(prey2):
+	if is_instance_valid(prey2) and not prey2.is_queued_for_deletion():
 		prey2_status = "Alive"
-		prey2_pos_x = prey2.position.x
-		prey2_pos_y = prey2.position.y
-		prey2_vel_x = prey2.velocity.x
-		prey2_vel_y = prey2.velocity.y
+		prey2_pos_x = (prey2.global_position.x)
+		prey2_pos_y = (prey2.global_position.y)
+		prey2_vel_x = (prey2.velocity.x)
+		prey2_vel_y = (prey2.velocity.y)
 	else:
 		prey2_status = "Dead"
 		prey2_pos_x = null
@@ -136,12 +136,12 @@ func record_sample():
 		prey2_vel_x = null
 		prey2_vel_y = null
 	
-	if is_instance_valid(prey3):
+	if is_instance_valid(prey3) and not prey3.is_queued_for_deletion():
 		prey3_status = "Alive"
-		prey3_pos_x = prey3.position.x
-		prey3_pos_y = prey3.position.y
-		prey3_vel_x = prey3.velocity.x
-		prey3_vel_y = prey3.velocity.y
+		prey3_pos_x = (prey3.global_position.x)
+		prey3_pos_y = (prey3.global_position.y)
+		prey3_vel_x = (prey3.velocity.x)
+		prey3_vel_y = (prey3.velocity.y)
 	else:
 		prey3_status = "Dead"
 		prey3_pos_x = null
@@ -155,10 +155,10 @@ func record_sample():
 		"hunt_mode": hunt_type,
 		"dragonfly_state": state,
 		"dragonfly_predicting": predicting,
-		"dragonfly_position_x": dragonfly.position.x,
-		"dragonfly_position_y": dragonfly.position.y,
-		"dragonfly_velocity_x": dragonfly.velocity.x,
-		"dragonfly_velocity_y": dragonfly.velocity.y,
+		"dragonfly_position_x": (dragonfly.global_position.x),
+		"dragonfly_position_y": (dragonfly.global_position.y),
+		"dragonfly_velocity_x": (dragonfly.velocity.x),
+		"dragonfly_velocity_y": (dragonfly.velocity.y),
 		"prey1_status": prey1_status,
 		"prey1_position_x": prey1_pos_x,
 		"prey1_position_y": prey1_pos_y,

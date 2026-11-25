@@ -115,7 +115,7 @@ func hunt_prey(prey: CharacterBody2D, delta: float) -> void:
 		#If there is a prediction, calculate direction with predicted direction
 		if predicting and predicted_direction != Vector2(-1, -1):
 			#Check if prediction moves pursuer away from the prey
-			if predicted_direction.dot(direction) > 0.0:
+			if predicted_direction.dot(direction) > 0.3:
 				#Save the calculation of the direction with the current one
 				var predicted_direction_aux = predicted_direction.slerp(direction, 12.0 * delta).normalized()
 				
@@ -195,9 +195,10 @@ func predict_prey(prey: CharacterBody2D) -> void:
 	if id >= 0 and id < dataset.size():
 		#Calculates a prediction for a position 0.5 seconds in the future
 		var latest_time: float = controller.database.dataset[id][-1]["time"]
-		var horizon: float = controller.known_prey_chase_time[id] + delta_ref - latest_time + 0.5
+		var horizon: float = controller.known_prey_chase_time[id] + delta_ref - latest_time
 		print("HORIZON: ",horizon)
 		predicted_position = controller.gaussian.predict(dataset[id], horizon)
+	
 	else:
 		print("|ERROR|: Prey is not in database")
 		return
@@ -213,8 +214,13 @@ func predict_prey(prey: CharacterBody2D) -> void:
 
 #Function to collect data from stalked prey [WIP]
 func collect_data(id: int, prey: CharacterBody2D) -> void:
+	print("|Prey' Diagnostics|")
+	print("Position: ", prey.global_position)
+	print("Actual velocity: ", prey.actual_velocity)
+	print("Assigned velocity: ", prey.velocity)
+	
 	#Add prey information on the dataset
-	controller.database.add_data(id, controller.known_prey_chase_time[id], prey.position, prey.velocity)
+	controller.database.add_data(id, controller.known_prey_chase_time[id], prey.global_position, prey.actual_velocity)
 
 #Finds prey id in the controller
 func find_prey_id (prey: CharacterBody2D):

@@ -149,7 +149,7 @@ func collect_data(id: int, prey: CharacterBody2D) -> void:
 		print("|COLLECTED DATA|: ", prey)
 		
 		#Add prey information on the dataset
-		controller.database.add_data(id, controller.known_prey_chase_time[id], prey.position, prey.velocity)
+		controller.database.add_data(id, controller.known_prey_chase_time[id], prey.global_position, prey.actual_velocity)
 		
 		#Increase confidence
 		controller.current_confidence += 1
